@@ -178,21 +178,6 @@ Get database schema (for debugging).
 - ✅ Server responds to 6 predefined questions
 - ✅ Can display results in tables and metric cards
 
-## Troubleshooting
-
-**Backend won't start:**
-- Verify PostgreSQL is running: `pg_isready`
-- Check database exists: `psql -l | grep northwind`
-- Verify .env credentials are correct
-
-**Frontend can't connect to backend:**
-- Ensure backend is running on port 3000
-- Check NEXT_PUBLIC_API_URL in .env.local
-- Verify CORS is enabled in backend
-
-**No data returned:**
-- Check that Northwind database is properly seeded
-- Test a query directly: `psql northwind -c "SELECT COUNT(*) FROM customers;"`
 
 ## Next Steps (Future Iterations)
 
