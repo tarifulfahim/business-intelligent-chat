@@ -23,6 +23,7 @@ export function ChatInterface() {
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [sampleQuestions, setSampleQuestions] = useState<string[]>([])
+  const [conversationId, setConversationId] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -62,8 +63,14 @@ export function ChatInterface() {
 
     try {
       const response = await axios.post(`${API_URL}/api/chat`, {
-        message: input
+        message: input,
+        conversation_id: conversationId // Include conversation_id if exists
       })
+
+      // Store conversation_id from response
+      if (response.data.conversation_id) {
+        setConversationId(response.data.conversation_id)
+      }
 
       const assistantMessage: Message = {
         role: 'assistant',
@@ -91,12 +98,25 @@ export function ChatInterface() {
     setInput(question)
   }
 
+  const handleNewConversation = () => {
+    setMessages([])
+    setConversationId(null)
+    setInput('')
+  }
+
   return (
     <div className="flex flex-col h-screen max-w-5xl mx-auto p-4">
       {/* Header */}
-      <div className="mb-4">
-        <h1 className="text-3xl font-bold mb-2">Business Intelligence Chat</h1>
-        <p className="text-muted-foreground">Ask questions about your business data</p>
+      <div className="mb-4 flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">Business Intelligence Chat</h1>
+          <p className="text-muted-foreground">Ask questions about your business data</p>
+        </div>
+        {messages.length > 0 && (
+          <Button variant="outline" onClick={handleNewConversation}>
+            New Chat
+          </Button>
+        )}
       </div>
 
       {/* Sample Questions */}

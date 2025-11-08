@@ -1,15 +1,17 @@
-# Business Intelligence Chat System - Iteration 2
+# Business Intelligence Chat System - Iteration 3
 
-A conversational interface for querying business data using natural language, powered by Google Gemini AI.
+A conversational interface for querying business data using natural language, powered by Google Gemini AI with context-aware follow-up conversations.
 
 ## Overview
 
-This is Iteration 2 of the BI Chat System featuring:
+This is Iteration 3 of the BI Chat System featuring:
 - ✅ Chat UI with message history
 - ✅ PostgreSQL Northwind database integration
 - ✅ **LLM-powered SQL generation using Google Gemini**
 - ✅ **Dynamic query understanding for any business question**
-- ✅ **SQL validation and security checks**
+- ✅ **Context Management with LangChain Memory**
+- ✅ **Follow-up questions with pronoun resolution (they, them, those)**
+- ✅ **Multi-turn conversations with entity tracking**
 - ✅ Data visualization (tables and metric cards)
 
 ## Tech Stack
@@ -24,7 +26,8 @@ This is Iteration 2 of the BI Chat System featuring:
 **Backend:**
 - Node.js + Express
 - PostgreSQL (Northwind database)
-- Google Gemini API (gemini-1.5-flash)
+- Google Gemini API (gemini-2.5-flash)
+- LangChain (BufferWindowMemory for conversation context)
 - SQL validation & security
 - CORS enabled
 
@@ -99,7 +102,9 @@ Once both servers are running:
 
 1. Open your browser to `http://localhost:3001`
 2. You'll see the chat interface with sample questions
-3. Ask **any** business question in natural language! Examples:
+3. Ask **any** business question in natural language!
+
+### Single Questions
    - "Show me top customers by revenue"
    - "What's our total revenue?"
    - "Show me top selling products"
@@ -108,7 +113,30 @@ Once both servers are running:
    - "What's the average order value?"
    - "List all products in the Beverages category"
    - "Show employee sales performance"
-   - Or **any other question** about customers, orders, products, and sales!
+
+### Multi-Turn Conversations (NEW in Iteration 3!)
+The system now understands context and can handle follow-up questions:
+
+**Example 1: Pronoun Resolution**
+- You: "Show me top 5 customers by revenue"
+- AI: [Returns top 5 customers]
+- You: "What products are they buying?"
+- AI: [Returns products for those 5 customers]
+
+**Example 2: Product Investigation**
+- You: "Show products in the Beverages category"
+- AI: [Returns beverages]
+- You: "Which customers buy them?"
+- AI: [Returns customers who buy those products]
+
+**Example 3: Filtering**
+- You: "Show all orders"
+- AI: [Returns orders]
+- You: "Filter to just Germany"
+- AI: [Returns orders from Germany]
+
+**Start New Conversation:**
+Click the "New Chat" button to clear context and start fresh!
 
 ## Project Structure
 
@@ -192,7 +220,7 @@ Get database schema (for debugging).
 - ✅ Server responds to predefined questions
 - ✅ Can display results in tables and metric cards
 
-### Iteration 2 (Current)
+### Iteration 2 (Completed)
 - ✅ LLM generates valid SQL from natural language
 - ✅ System handles unlimited question types (not limited to predefined)
 - ✅ SQL validation and security (blocks dangerous queries)
@@ -200,6 +228,14 @@ Get database schema (for debugging).
 - ✅ Handles both business and non-business questions gracefully
 - ✅ Auto-detection of visualization type (table vs metric)
 
+### Iteration 3 (Current)
+- ✅ Conversation context management with LangChain
+- ✅ Pronoun resolution (they, them, those)
+- ✅ Entity extraction from query results
+- ✅ Multi-turn conversations (5 message history)
+- ✅ Context-aware SQL generation
+- ✅ New conversation button to clear context
+- ✅ Conversation ID tracking across messages
 
 ## Features
 
@@ -214,16 +250,24 @@ Get database schema (for debugging).
 - Automatic LIMIT clause enforcement (max 100 rows)
 - Read-only queries (SELECT only)
 
-### 💬 Flexible Conversation
+### 💬 Context-Aware Conversations (NEW!)
+- **LangChain BufferWindowMemory** for conversation history (last 5 exchanges)
+- **Pronoun resolution**: Understands "they", "them", "those" references
+- **Entity extraction**: Tracks customer IDs, product IDs, categories, etc.
+- **Follow-up questions**: Build on previous queries naturally
+- **Session management**: Isolated conversations with conversation_id
+- **New chat button**: Start fresh conversations anytime
+
+### 🎯 Flexible Conversation
 - Handles business questions with SQL generation
 - Gracefully responds to non-business questions
 - Clear error messages and suggestions
 
 ## Next Steps (Future Iterations)
 
-- Iteration 3: Context management for follow-up questions
 - Iteration 4: Advanced visualizations (charts, graphs)
 - Iteration 5: Query caching and performance optimization
+- Iteration 6: Export results to CSV/Excel
 
 ## License
 

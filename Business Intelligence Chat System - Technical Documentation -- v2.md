@@ -234,60 +234,76 @@ async function processQuestion(question, conversationHistory) {
 
 **Goal:** Handle follow-up questions with context
 
-**Context Manager Design:**
+### Hybrid Approach (Best of Both Worlds)
+
+You can use **LangChain for memory** while keeping Express for everything else:
+
+
 
 ```javascript
-class ConversationContext {
+// backend/services/conversationMemory.js
+import { BufferWindowMemory } from "langchain/memory";
+
+class ConversationManager {
   constructor() {
-    this.history = [];
-    this.entities = {};
+    this.sessions = new Map();
   }
   
-  addMessage(role, content, metadata = {}) {
-    this.history.push({
-      role,
-      content,
-      metadata,
-      timestamp: Date.now()
-    });
-    
-    // Extract entities from results
-    if (metadata.entities) {
-      this.updateEntities(metadata.entities);
+  getMemory(sessionId) {
+    if (!this.sessions.has(sessionId)) {
+      this.sessions.set(sessionId, new BufferWindowMemory({ k: 5 }));
     }
+    return this.sessions.get(sessionId);
   }
   
-  updateEntities(newEntities) {
-    // Store referenced customers, products, time periods
-    this.entities = {
-      ...this.entities,
-      ...newEntities,
-      lastUpdated: Date.now()
-    };
+  async addMessage(sessionId, role, content) {
+    const memory = this.getMemory(sessionId);
+    await memory.saveContext(
+      { input: role === 'user' ? content : '' },
+      { output: role === 'assistant' ? content : '' }
+    );
   }
   
-  getContext() {
-    return {
-      recentMessages: this.history.slice(-5),
-      currentEntities: this.entities
-    };
+  async getContext(sessionId) {
+    const memory = this.getMemory(sessionId);
+    return await memory.loadMemoryVariables({});
   }
 }
+
+module.exports = new ConversationManager();
 ```
 
-**Pronoun Resolution:**
+```javascript
+const conversationManager = require('./services/conversationMemory');
 
+app.post('/api/chat', async (req, res) => {
+  const { message, sessionId } = req.body;
+  
+  // Get context from LangChain memory
+  const context = await conversationManager.getContext(sessionId);
+  
+  // Build prompt with context (your custom logic)
+  const prompt = buildPrompt(message, context.history);
+
+     // Get the model
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const result = await model.generateContent(prompt);
+  // Save to LangChain memory
+  await conversationManager.addMessage(sessionId, 'user', message);
+  await conversationManager.addMessage(sessionId, 'assistant', response.content[0].text);
+  
+  res.json(response);
+});
 ```
-Enhanced LLM Prompt:
 
-Conversation Context:
-Previous Question: "Show top 5 customers by revenue"
-Referenced Entities: {customer_ids: [1,2,3,4,5]}
+**This hybrid approach gives you:**
+- ✅ Proven memory management from LangChain
+- ✅ Full control over SQL generation
+- ✅ Direct API performance
+- ✅ Easy to migrate to full LangChain later if needed
 
-Current Question: "What products are they buying?"
+---
 
-Resolve "they" to the customer_ids from context and generate SQL.
-```
 
 **Success Criteria:**
 - ✅ Handles "they", "them", "those" pronouns

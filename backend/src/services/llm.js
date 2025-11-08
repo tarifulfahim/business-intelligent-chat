@@ -10,9 +10,10 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 /**
  * Generate SQL and explanation from user question using Gemini
  * @param {string} userQuestion - User's question
+ * @param {Object} conversationContext - Optional conversation context
  * @returns {Promise<Object>} Response object with sql, explanation, and visualization type
  */
-export async function generateSQLFromQuestion(userQuestion) {
+export async function generateSQLFromQuestion(userQuestion, conversationContext = null) {
   try {
     if (!process.env.GEMINI_API_KEY) {
       throw new Error('GEMINI_API_KEY is not configured');
@@ -21,12 +22,13 @@ export async function generateSQLFromQuestion(userQuestion) {
     // Get the model
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-    // Build the prompt
-    const prompt = await buildPrompt(userQuestion);
+    // Build the prompt with conversation context
+    const prompt = await buildPrompt(userQuestion, conversationContext);
 
-    console.log('Prompt:', prompt);
-
-    console.log('Sending prompt to Gemini...');
+    console.log('Sending prompt to Gemini with context...');
+    if (conversationContext && conversationContext.history) {
+      console.log(`Context: ${conversationContext.history.length} previous messages`);
+    }
 
     // Generate content
     const result = await model.generateContent(prompt);
