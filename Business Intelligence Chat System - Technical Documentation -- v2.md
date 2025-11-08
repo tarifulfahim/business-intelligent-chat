@@ -94,7 +94,7 @@ graph TB
 **Backend:**
 - Node.js + Express
 - Better-sqlite3 (embedded database)
-- Anthropic SDK / OpenAI SDK
+- OpenAI SDK
 
 **Why this stack:**
 - Single language across stack

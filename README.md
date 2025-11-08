@@ -1,13 +1,15 @@
-# Business Intelligence Chat System - Iteration 1
+# Business Intelligence Chat System - Iteration 2
 
-A conversational interface for querying business data using natural language.
+A conversational interface for querying business data using natural language, powered by Google Gemini AI.
 
 ## Overview
 
-This is Iteration 1 of the BI Chat System featuring:
+This is Iteration 2 of the BI Chat System featuring:
 - ✅ Chat UI with message history
 - ✅ PostgreSQL Northwind database integration
-- ✅ Express backend with hardcoded responses
+- ✅ **LLM-powered SQL generation using Google Gemini**
+- ✅ **Dynamic query understanding for any business question**
+- ✅ **SQL validation and security checks**
 - ✅ Data visualization (tables and metric cards)
 
 ## Tech Stack
@@ -22,6 +24,8 @@ This is Iteration 1 of the BI Chat System featuring:
 **Backend:**
 - Node.js + Express
 - PostgreSQL (Northwind database)
+- Google Gemini API (gemini-1.5-flash)
+- SQL validation & security
 - CORS enabled
 
 ## Prerequisites
@@ -29,6 +33,7 @@ This is Iteration 1 of the BI Chat System featuring:
 - Node.js 18+
 - PostgreSQL installed and running
 - Northwind database set up
+- **Google Gemini API key** ([Get it here](https://aistudio.google.com/app/apikey))
 
 ## Setup Instructions
 
@@ -56,12 +61,13 @@ npm install
 # Create .env file
 cp .env.example .env
 
-# Edit .env with your database credentials
+# Edit .env with your database credentials AND Gemini API key
 # DB_USER=postgres
 # DB_HOST=localhost
 # DB_NAME=northwind
 # DB_PASSWORD=your_password
 # DB_PORT=5432
+# GEMINI_API_KEY=your_gemini_api_key_here
 
 # Start the backend server
 npm run dev
@@ -93,13 +99,16 @@ Once both servers are running:
 
 1. Open your browser to `http://localhost:3001`
 2. You'll see the chat interface with sample questions
-3. Click on a sample question or type your own:
-   - "Show me top customers"
+3. Ask **any** business question in natural language! Examples:
+   - "Show me top customers by revenue"
    - "What's our total revenue?"
-   - "Show me top products"
-   - "Revenue by category"
-   - "Show orders by country"
-   - "Employee performance"
+   - "Show me top selling products"
+   - "Revenue by product category"
+   - "Which customers are from Germany?"
+   - "What's the average order value?"
+   - "List all products in the Beverages category"
+   - "Show employee sales performance"
+   - Or **any other question** about customers, orders, products, and sales!
 
 ## Project Structure
 
@@ -111,7 +120,11 @@ bi-chat/
 │   │   │   └── chat.js          # Chat API endpoint
 │   │   ├── services/
 │   │   │   ├── database.js      # PostgreSQL connection
-│   │   │   └── hardcodedResponses.js  # Predefined Q&A
+│   │   │   ├── llm.js           # Gemini AI integration
+│   │   │   ├── promptBuilder.js # Prompt construction
+│   │   │   └── chatResponse.js  # Main chat handler
+│   │   ├── utils/
+│   │   │   └── sqlValidator.js  # SQL security validation
 │   │   └── server.js            # Express app
 │   ├── .env.example
 │   └── package.json
@@ -171,19 +184,46 @@ Get list of available sample questions.
 ### GET /api/schema
 Get database schema (for debugging).
 
-## Iteration 1 Success Criteria
+## Success Criteria
 
+### Iteration 1 (Completed)
 - ✅ Chat interface renders messages
 - ✅ Database contains realistic sample data (Northwind DB)
-- ✅ Server responds to 6 predefined questions
+- ✅ Server responds to predefined questions
 - ✅ Can display results in tables and metric cards
 
+### Iteration 2 (Current)
+- ✅ LLM generates valid SQL from natural language
+- ✅ System handles unlimited question types (not limited to predefined)
+- ✅ SQL validation and security (blocks dangerous queries)
+- ✅ Response time < 5 seconds
+- ✅ Handles both business and non-business questions gracefully
+- ✅ Auto-detection of visualization type (table vs metric)
+
+
+## Features
+
+### 🤖 AI-Powered Query Generation
+- Uses Google Gemini to understand natural language questions
+- Automatically generates optimized PostgreSQL queries
+- Intelligent visualization selection (table vs metrics)
+
+### 🔒 Security
+- SQL injection prevention with keyword blocking
+- Whitelist-based table validation
+- Automatic LIMIT clause enforcement (max 100 rows)
+- Read-only queries (SELECT only)
+
+### 💬 Flexible Conversation
+- Handles business questions with SQL generation
+- Gracefully responds to non-business questions
+- Clear error messages and suggestions
 
 ## Next Steps (Future Iterations)
 
-- Iteration 2: LLM integration for dynamic SQL generation
 - Iteration 3: Context management for follow-up questions
 - Iteration 4: Advanced visualizations (charts, graphs)
+- Iteration 5: Query caching and performance optimization
 
 ## License
 

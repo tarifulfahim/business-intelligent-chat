@@ -1,8 +1,19 @@
 import express from 'express';
 import { chatResponse } from '../services/chatResponse.js';
-import { getSampleQuestions } from '../services/hardcodedResponses.js';
 
 const router = express.Router();
+
+// Sample questions for users to try
+const SAMPLE_QUESTIONS = [
+  "Show me top customers by revenue",
+  "What's our total revenue?",
+  "Show me top selling products",
+  "Revenue by product category",
+  "Show orders by country",
+  "Employee sales performance",
+  "Which customers are from Germany?",
+  "What's the average order value?"
+];
 
 /**
  * POST /api/chat
@@ -16,7 +27,7 @@ router.post('/', chatResponse);
  */
 router.get('/sample-questions', (req, res) => {
   res.json({
-    questions: getSampleQuestions()
+    questions: SAMPLE_QUESTIONS
   });
 });
 

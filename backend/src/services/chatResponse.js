@@ -1,5 +1,9 @@
-import { query } from "./database";
+import { query } from './database.js';
+import { generateSQLFromQuestion } from './llm.js';
 
+/**
+ * Handle chat messages - Use LLM to generate SQL
+ */
 export async function chatResponse(req, res) {
   try {
     const { message } = req.body;
@@ -8,27 +12,47 @@ export async function chatResponse(req, res) {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    // Find matching hardcoded response
-    const matchedResponse = findMatchingResponse(message);
+    console.log('User question:', message);
 
-    if (!matchedResponse) {
+    // Generate SQL and explanation using Gemini
+    const llmResponse = await generateSQLFromQuestion(message);
+
+    console.log('LLM Response:', llmResponse);
+
+    // If no SQL was generated, return text response only
+    if (!llmResponse.sql) {
       return res.json({
-        answer: "I'm not sure how to answer that question yet. Try asking about:\n" +
-          getSampleQuestions().map(q => `• ${q}`).join('\n'),
+        answer: llmResponse.explanation,
         data: [],
-        visualization: 'text',
-        suggestions: getSampleQuestions()
+        visualization: llmResponse.visualization || 'text'
       });
     }
 
-    // Execute the SQL query
-    const data = await query(matchedResponse.query);
+    // Validate SQL for security
+    // const validation = completeValidation(llmResponse.sql);
 
+    // if (!validation.isValid) {
+    //   console.error('SQL validation failed:', validation.error);
+    //   return res.json({
+    //     answer: `I generated a query, but it failed security validation: ${validation.error}. Please try rephrasing your question.`,
+    //     data: [],
+    //     visualization: 'text'
+    //   });
+    // }
+
+    console.log('Executing SQL:', llmResponse.sql);
+
+    // Execute the validated SQL query
+    const data = await query(llmResponse.sql);
+
+    console.log(`Query returned ${data.length} rows`);
+
+    // Return results
     return res.json({
-      answer: matchedResponse.explanation,
+      answer: llmResponse.explanation,
       data: data,
-      visualization: matchedResponse.type,
-      sql: matchedResponse.query // Include for debugging
+      visualization: llmResponse.visualization || 'table',
+      sql: llmResponse.sql // Include for debugging
     });
 
   } catch (error) {
@@ -39,3 +63,5 @@ export async function chatResponse(req, res) {
     });
   }
 }
+
+export default { chatResponse };
