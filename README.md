@@ -2,18 +2,6 @@
 
 A conversational interface for querying business data using natural language, powered by Google Gemini AI with context-aware follow-up conversations.
 
-## Overview
-
-This is Iteration 3 of the BI Chat System featuring:
-- ✅ Chat UI with message history
-- ✅ PostgreSQL Northwind database integration
-- ✅ **LLM-powered SQL generation using Google Gemini**
-- ✅ **Dynamic query understanding for any business question**
-- ✅ **Context Management with LangChain Memory**
-- ✅ **Follow-up questions with pronoun resolution (they, them, those)**
-- ✅ **Multi-turn conversations with entity tracking**
-- ✅ Data visualization (tables and metric cards)
-
 ## Tech Stack
 
 **Frontend:**
@@ -42,15 +30,7 @@ This is Iteration 3 of the BI Chat System featuring:
 
 ### 1. Database Setup
 
-First, ensure PostgreSQL is running and create the Northwind database:
-
-```bash
-# Create database
-createdb northwind
-
-# Import the schema and data
-psql northwind < northwind_psql/northwind.sql
-```
+Use the provided sql file `nortwhind.sql` in order to populate your database.
 
 ### 2. Backend Setup
 
@@ -59,7 +39,7 @@ psql northwind < northwind_psql/northwind.sql
 cd backend
 
 # Install dependencies
-npm install
+yarn
 
 # Create .env file
 cp .env.example .env
@@ -73,7 +53,7 @@ cp .env.example .env
 # GEMINI_API_KEY=your_gemini_api_key_here
 
 # Start the backend server
-npm run dev
+yarn dev
 ```
 
 The backend will run on `http://localhost:3000`
@@ -85,13 +65,13 @@ The backend will run on `http://localhost:3000`
 cd frontend
 
 # Install dependencies
-npm install
+yarn
 
 # Create .env.local file
 cp .env.local.example .env.local
 
 # Start the frontend
-npm run dev
+yarn dev
 ```
 
 The frontend will run on `http://localhost:3001` (or 3000 if backend uses different port)
@@ -212,56 +192,6 @@ Get list of available sample questions.
 ### GET /api/schema
 Get database schema (for debugging).
 
-## Success Criteria
-
-### Iteration 1 (Completed)
-- ✅ Chat interface renders messages
-- ✅ Database contains realistic sample data (Northwind DB)
-- ✅ Server responds to predefined questions
-- ✅ Can display results in tables and metric cards
-
-### Iteration 2 (Completed)
-- ✅ LLM generates valid SQL from natural language
-- ✅ System handles unlimited question types (not limited to predefined)
-- ✅ SQL validation and security (blocks dangerous queries)
-- ✅ Response time < 5 seconds
-- ✅ Handles both business and non-business questions gracefully
-- ✅ Auto-detection of visualization type (table vs metric)
-
-### Iteration 3 (Current)
-- ✅ Conversation context management with LangChain
-- ✅ Pronoun resolution (they, them, those)
-- ✅ Entity extraction from query results
-- ✅ Multi-turn conversations (5 message history)
-- ✅ Context-aware SQL generation
-- ✅ New conversation button to clear context
-- ✅ Conversation ID tracking across messages
-
-## Features
-
-### 🤖 AI-Powered Query Generation
-- Uses Google Gemini to understand natural language questions
-- Automatically generates optimized PostgreSQL queries
-- Intelligent visualization selection (table vs metrics)
-
-### 🔒 Security
-- SQL injection prevention with keyword blocking
-- Whitelist-based table validation
-- Automatic LIMIT clause enforcement (max 100 rows)
-- Read-only queries (SELECT only)
-
-### 💬 Context-Aware Conversations (NEW!)
-- **LangChain BufferWindowMemory** for conversation history (last 5 exchanges)
-- **Pronoun resolution**: Understands "they", "them", "those" references
-- **Entity extraction**: Tracks customer IDs, product IDs, categories, etc.
-- **Follow-up questions**: Build on previous queries naturally
-- **Session management**: Isolated conversations with conversation_id
-- **New chat button**: Start fresh conversations anytime
-
-### 🎯 Flexible Conversation
-- Handles business questions with SQL generation
-- Gracefully responds to non-business questions
-- Clear error messages and suggestions
 
 ## Next Steps (Future Iterations)
 
