@@ -44,7 +44,8 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Backend server running on http://localhost:${PORT}`);
-  console.log(`📊 Chat API available at http://localhost:${PORT}/api/chat`);
+// Bind to 0.0.0.0 to accept connections from outside the container (required for Railway)
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Backend server running on http://0.0.0.0:${PORT}`);
+  console.log(`📊 Chat API available at http://0.0.0.0:${PORT}/api/chat`);
 });
